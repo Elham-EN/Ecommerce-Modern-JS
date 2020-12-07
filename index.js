@@ -28,27 +28,6 @@ app.get('/', (req, res) => {
     `)
 })
 
-//my own MiddleWare Function
-const myOwnBodyParser = (req, res, next) => {
-    if (req.method === 'POST') { //if we are dealing with post request
-         //Once node completes reading request data. an event called ‘data’ on incoming http request. 
-         //We first get the data by listening to the stream data event
-         req.on('data', (data) => { 
-            const parsed = data.toString('utf8').split('&') //become an array of string
-            const formData = {} // empty object
-            for (let pair of parsed) { //loops through the values of each element
-                // split() --> 'key: email vlaue: 101571578@gmail.com', & Destructuring 
-                const [key, value] = pair.split('=')
-                formData[key] = value //add new properties to an object: Using square bracket notation:
-            }//end of loop
-            req.body = formData
-            next() //end the request-response cycle,
-        })
-    } else {
-        next() //callback function - a sign that we are done with the processing 
-    }
-}
-
 /*Whenever we get a post request to forward slash - run this function (bodyParser). and then once
 that function calls its next() callback, take req & res objects and pass them through the next 
 fucntion in third argument of post() function */
