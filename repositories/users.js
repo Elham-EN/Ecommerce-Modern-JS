@@ -1,5 +1,7 @@
 const fs = require('fs')
 const crypto = require('crypto')
+const util = require('util')
+const scrypt = util.promisify(crypto.scrypt)
 
 class UsersRepositories {
     constructor(filename) { //cannot have asynchronous code inside the constructor
@@ -25,17 +27,37 @@ class UsersRepositories {
     //creates a user with given attributes
     async create(attrs) { //attrs is an object
         attrs['id'] = this.randomId() //add property to the object
+        const salt = crypto.randomBytes(8).toString('hex')
+        /*scrypt password-base key function is an algorithm designed to converts human readable passwords 
+        into fixed length arrays of bytes, which can then be used as a key for private keys, et cetera.*/ 
+        const buf = await scrypt(attrs.password, salt, 64)
         /*{email: 'alskd@gmail.com, password: 'abcs'} Add it into big array of users and then write that
-           update to our users.json file*/
-           const records = await this.getAll() //return existing list of users
-           records.push(attrs) //add the new user object
-           await this.writeAll(records)
+        update to our users.json file*/
+        const records = await this.getAll() //return existing list of users
+        //Take out all the properties out of attrs object & then override those exisitng properties 
+        //with this new password. meaning replace default or plaintext password provided inside 
+        //parameter attrs
+        const record = {...attrs, password: `${buf.toString('hex')}.${salt}`}
+        records.push(record) //add the new user object
+        await this.writeAll(records)
+        return record //contain id of user we just made
     }
 
     //Write all users to users.json file
     async writeAll(records) {
         //write the updated 'records' array back to this.filename - second args is data to store inside file
         await fs.promises.writeFile(this.filename, JSON.stringify(records, null, 2)) //convert to JSON string
+    }
+
+    async comparePasswords(saved, supplied) {
+        //saved -> password saved in the json file. 'hashed.salt'
+        //Supplied -> password given to us by user trying to sign in
+        const [hashed, salt] = saved.split('.')
+        console.log(hashed);
+        console.log(salt);
+        const hashedSuppliedBuff = await scrypt(supplied, salt, 64)
+        console.log(hashedSuppliedBuff.toString('hex'));
+        return hashed === hashedSuppliedBuff.toString('hex')
     }
 
     //Generates a random id & return id
@@ -69,12 +91,12 @@ class UsersRepositories {
     
     //Find one user with the given filters
     async getOneBy(filters) {
-        const records = await this.getAll() //collection of user record
+        const records = await this.getAll() //collection of user record in json file
         for (let record of records) { //outer for loop (array)
             let found = true
             for (let key in filters) { //inner for loop (objects)| e.g key = password
                 if (record[key] !== filters[key]) { //if {email: "liam@gmail.com"} != {email: "liam@gmail.com"}
-                    found = false
+                    found = false //if not same then return false
                 }
             } //end of inner loop
             if (found ) {
@@ -83,10 +105,5 @@ class UsersRepositories {
         }//end of outer loop
     }
 }
-const test = async () => {
-    const repo = new UsersRepositories('users.json') //Access users repository
-    const user = await repo.getOneBy({email: "liam@gmail.com", password: 'mypasswodrd'})
-    console.log(user);
-}
 
-test()
+module.exports = new UsersRepositories('users.json')
