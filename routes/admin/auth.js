@@ -1,5 +1,5 @@
 const express = require('express')
-const { check } = require('express-validator')
+const { check, validationResult } = require('express-validator')
 const userRepo = require('../../repositories/users')
 const signupTemplate = require('../../views/admin/auth/signup')
 const signTemplate = require('../../views/admin/auth/signin')
@@ -16,23 +16,27 @@ router.get('/signup', (req, res) => { //when user goes to localhost:3000 which s
 //Getting post request from user form signup and Respond to POST request on the root route (/) homepage*/
 router.post('/signup',[
         check('email').trim().normalizeEmail().isEmail(),
-        check('password'),
-        check('passwordConfirmation')
-    ] , async (req, res) => {
-    const  {email, password, passwordConfirmation} = req.body //destructing 
-    const existingUser = await userRepo.getOneBy({email: email})
-    if (existingUser) { //check if it contain that email already in users.json file
-        return res.send('Email in use')
+        check('password').trim().isLength({ min: 4, max: 15}),
+        check('passwordConfirmation').trim().isLength({ min: 4, max: 15})
+    ] , 
+    async (req, res) => {
+        const error = validationResult(req)
+        const  {email, password, passwordConfirmation} = req.body //destructing 
+        const existingUser = await userRepo.getOneBy({email: email})
+        if (existingUser) { //check if it contain that email already in users.json file
+            return res.send('Email in use')
+        }
+        if (password != passwordConfirmation) {
+            return res.send('Password must match')
+        }
+        //Create a user in our user repo to represent this person 
+        const user = await userRepo.create({email: email, password: password})
+        //Store the id of that user inside the users cookie. userId is property 
+        //of session object & store id
+        req.session.userId = user.id
+        res.send('Account created!!!')
     }
-    if (password != passwordConfirmation) {
-        return res.send('Password must match')
-    }
-    //Create a user in our user repo to represent this person 
-    const user = await userRepo.create({email: email, password: password})
-    //Store the id of that user inside the users cookie. userId is property of session object & store id
-    req.session.userId = user.id
-    res.send('Account created!!!')
-})
+)//end of post method
 
 //when client make a request to /signout and the application will sign out the user
 router.get('/signout', (req, res) => {
