@@ -1,4 +1,5 @@
 const express = require('express')
+const { check } = require('express-validator')
 const userRepo = require('../../repositories/users')
 const signupTemplate = require('../../views/admin/auth/signup')
 const signTemplate = require('../../views/admin/auth/signin')
@@ -13,7 +14,11 @@ router.get('/signup', (req, res) => { //when user goes to localhost:3000 which s
 })
 
 //Getting post request from user form signup and Respond to POST request on the root route (/) homepage*/
-router.post('/signup', async (req, res) => {
+router.post('/signup',[
+        check('email').trim().normalizeEmail().isEmail(),
+        check('password'),
+        check('passwordConfirmation')
+    ] , async (req, res) => {
     const  {email, password, passwordConfirmation} = req.body //destructing 
     const existingUser = await userRepo.getOneBy({email: email})
     if (existingUser) { //check if it contain that email already in users.json file
