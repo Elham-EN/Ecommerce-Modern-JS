@@ -53,10 +53,10 @@ class UsersRepositories {
         //saved -> password saved in the json file. 'hashed.salt'
         //Supplied -> password given to us by user trying to sign in
         const [hashed, salt] = saved.split('.')
-        console.log(hashed);
-        console.log(salt);
+        //console.log(hashed);
+        //console.log(salt);
         const hashedSuppliedBuff = await scrypt(supplied, salt, 64)
-        console.log(hashedSuppliedBuff.toString('hex'));
+        //console.log(hashedSuppliedBuff.toString('hex'));
         return hashed === hashedSuppliedBuff.toString('hex')
     }
 
@@ -90,16 +90,24 @@ class UsersRepositories {
     }
     
     //Find one user with the given filters
-    async getOneBy(filters) {
+    async getOneBy(filters) { //parameter - object: { email: soran@email.com }
         const records = await this.getAll() //collection of user record in json file
         for (let record of records) { //outer for loop (array)
             let found = true
             for (let key in filters) { //inner for loop (objects)| e.g key = password
+                console.log('record[key]: ', record[key], '    filters[key]: ', filters[key]);
                 if (record[key] !== filters[key]) { //if {email: "liam@gmail.com"} != {email: "liam@gmail.com"}
                     found = false //if not same then return false
                 }
             } //end of inner loop
             if (found ) {
+                /**Record return specific define user record based on the filters parameter
+                 *  {
+                        email: 'soran@email.com',
+                        password: 'eb3adec8d7d618bea5efa6b467bcda45b4670e95d3c0c01d87b4.7c795...',
+                        id: '37de1e4c'
+                    }
+                 */
                 return record //all the keys & values in the filter object is same as the record
             }
         }//end of outer loop
