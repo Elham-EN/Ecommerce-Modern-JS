@@ -1,5 +1,5 @@
 const express = require('express')
-const { check, validationResult } = require('express-validator')
+const { handleErrors } = require('./middlewares')
 const userRepo = require('../../repositories/users')
 const signupTemplate = require('../../views/admin/auth/signup')
 const signinTemplate = require('../../views/admin/auth/signin')
@@ -17,18 +17,14 @@ router.get('/signup', (req, res) => { //when user goes to localhost:3000 which s
 
 //Getting post request from user form signup and Respond to POST request on the root route (/) homepage*/
 router.post('/signup', [requireEmail, requirePassword, requirePasswordConfirmation] , //end of second argument
+    handleErrors(signupTemplate),
     async (req, res) => {
-        const errors = validationResult(req)
-        console.log(errors);
-        if (!errors.isEmpty()) { //if errors is not empty
-            return res.send(signupTemplate({ req, errors }))
-        }
-        const  {email, password, passwordConfirmation} = req.body //destructing 
+        const  { email, password } = req.body //destructing 
         //Create a user in our user repo to represent this person 
         const user = await userRepo.create({email: email, password: password})
         //Store the id of that user inside the users cookie. userId is property of session object & store id
         req.session.userId = user.id
-        res.send('Account created!!!')
+        res.redirect('/admin/products')
     } //end of third argument
 )//end of post method
 
@@ -47,17 +43,14 @@ router.get('/signin', (req, res) => {
 
 //Array of check() function - second argument of post() function
 router.post('/signin', [ requireEmailExist, requireValidPasswordForUser],
+    handleErrors(signinTemplate),
     //Async arrow function - third argument of post() function
     async (req, res) => { 
         //Extracts the validation errors from a request and makes them available
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            return res.send(signinTemplate({ errors: errors }))
-        }
         const {email} = req.body
         const user = await userRepo.getOneBy({ email: email }) //user with that given email exist
         req.session.userId = user.id //allow user to be authenticated with the application
-        res.send('You are signed In')
+        res.redirect('/admin/products')
     }
 )
 

@@ -16,6 +16,7 @@ const app = express()
 //To take a look inside of current working directory and find the public folder and make it available
 //to the outside world
 app.use(express.static('public'))
+/*middleware for parsing bodies from URL and send it to the req.body*/
 app.use(bodyParser.urlencoded({extended: true}))
 //This keys property is used to encrpty all information that is stored inside the cookie
 //to client it will just be random string 

@@ -2,6 +2,15 @@ const { check } = require('express-validator')
 const userRepo = require('../../repositories/users')
 
 module.exports = {
+    requireTitle: check('title')
+        .trim(),
+
+    requirePrice: check('price')
+        .trim()
+        .toFloat()
+        .isFloat({ min: 1 })
+        .withMessage('Must be greater then 1'),
+
     requireEmail: check('email') // string of field names to validate against
         .trim()
         .normalizeEmail()
