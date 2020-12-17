@@ -5,7 +5,8 @@ const bodyParser = require('body-parser')
 //This module stores the session data on the client within a cookie
 const cookieSession = require('cookie-session')
 const authRouter = require('./routes/admin/auth')
-const productRouter = require('./routes/admin/products')
+const adminProductsRouter = require('./routes/admin/products')
+const productsRouter = require('./routes/products')
 //The app object is instantiated on creation of the Express server. 
 const app = express()
 /**
@@ -22,7 +23,8 @@ app.use(bodyParser.urlencoded({extended: true}))
 //to client it will just be random string 
 app.use(cookieSession({keys: ['fidshnvfdsg789d']})) //it will do automatically
 app.use(authRouter)
-app.use(productRouter)
+app.use(productsRouter)
+app.use(adminProductsRouter)
 //tell my application to listen for incoming network traffic from the port
 app.listen(3000, () => {
     console.log('Listening');

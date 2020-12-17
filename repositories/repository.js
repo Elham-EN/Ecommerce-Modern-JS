@@ -42,7 +42,7 @@ module.exports = class Repository {
         return crypto.randomBytes(4).toString('hex')
     }
 
-    //Find the user with the given id
+    //Find the user/product with the given id
     async getOne(id) {
         const records = await this.getAll()
         return records.find(record => record.id === id)
@@ -52,6 +52,7 @@ module.exports = class Repository {
         const records = await this.getAll()
         //return true if the id is not equal the record.id
         const filteredRecords = records.filter(record => record.id != id)
+        console.log(filteredRecords);
         await this.writeAll(filteredRecords) //save it back to json file
     }
 
