@@ -5,7 +5,7 @@ module.exports = ({ products }) => {
     .map(product => {
       return `
         <div class="column is-one-quarter">
-          <div class="card product-card">
+          <div class="card product-card ">
             <figure>
               <img src="data:image/png;base64, ${product.image}"/>
             </figure>
@@ -14,11 +14,15 @@ module.exports = ({ products }) => {
               <h5>$${product.price}</h5>
             </div>
             <footer class="card-footer">
+
               <form action="/cart/products" method="POST">
+                <input hidden value="${product.id}" name="productId" />
                 <button class="button has-icon is-inverted">
-                  <i class="fa fa-shopping-cart"></i> Add to cart
+                  <i class="fa fa-shopping-cart"></i> 
+                  Add to cart
                 </button>
               </form>
+
             </footer>
           </div>
         </div>

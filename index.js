@@ -7,6 +7,7 @@ const cookieSession = require('cookie-session')
 const authRouter = require('./routes/admin/auth')
 const adminProductsRouter = require('./routes/admin/products')
 const productsRouter = require('./routes/products')
+const cartRouter = require('./routes/carts')
 //The app object is instantiated on creation of the Express server. 
 const app = express()
 /**
@@ -25,6 +26,7 @@ app.use(cookieSession({keys: ['fidshnvfdsg789d']})) //it will do automatically
 app.use(authRouter)
 app.use(productsRouter)
 app.use(adminProductsRouter)
+app.use(cartRouter)
 //tell my application to listen for incoming network traffic from the port
 app.listen(3000, () => {
     console.log('Listening');

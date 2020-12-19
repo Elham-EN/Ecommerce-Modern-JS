@@ -50,6 +50,7 @@ router.post('/signin', [ requireEmailExist, requireValidPasswordForUser],
         const {email} = req.body
         const user = await userRepo.getOneBy({ email: email }) //user with that given email exist
         req.session.userId = user.id //allow user to be authenticated with the application
+        
         res.redirect('/admin/products')
     }
 )
