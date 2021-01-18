@@ -1,5 +1,5 @@
 module.exports = ({ content }) => {
-    return `
+  return `
       <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -25,6 +25,9 @@ module.exports = ({ content }) => {
                     <div class="navbar-item">
                       <a href="/admin/products"><i class="fa fa-star"></i> Products</a>
                     </div>
+                    <div class="navbar-item">
+                    <a href="/"><i class="fa fa-star"></i> Back to client side</a>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -36,4 +39,4 @@ module.exports = ({ content }) => {
         </body>
       </html>
     `;
-  };
+};

@@ -1,8 +1,8 @@
-const layout = require('../layout');
+const layout = require("../layout");
 
 module.exports = ({ products }) => {
   const renderedProducts = products
-    .map(product => {
+    .map((product) => {
       return `
         <div class="column is-one-quarter">
           <div class="card product-card ">
@@ -28,7 +28,7 @@ module.exports = ({ products }) => {
         </div>
       `;
     })
-    .join('\n');
+    .join("\n");
 
   return layout({
     content: `
@@ -56,6 +56,6 @@ module.exports = ({ products }) => {
           </div>
         </div>
       </section>
-    `
+    `,
   });
 };
