@@ -28,5 +28,14 @@
   {
     "items": [],
     "id": "83b8745e"
+  },
+  {
+    "items": [
+      {
+        "productId": "fe90996f",
+        "quantity": 1
+      }
+    ],
+    "id": "2248a8f5"
   }
 ]
